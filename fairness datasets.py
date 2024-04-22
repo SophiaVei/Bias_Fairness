@@ -1,6 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from adjustText import adjust_text
+import seaborn as sns
+from matplotlib.colors import LinearSegmentedColormap
+
 
 # Load the dataset
 data = pd.read_csv('Fairness Datasets.csv')
@@ -100,3 +103,45 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()
 
+
+
+# Heatmap of Fairness Metrics vs. Protected Attributes
+# Re-expand 'Fairness metrics' and 'Bias Cases/Protected Attributes' from the original dataframe
+data_metrics_expanded = expand_entries(data, 'Fairness metrics')
+data_attributes_expanded = expand_entries(data_metrics_expanded, 'Bias Cases/Protected Attributes')
+
+# Create a dataframe that counts the occurrences of each combination of fairness metrics and protected attributes
+heatmap_data = pd.crosstab(data_attributes_expanded['Fairness metrics'], data_attributes_expanded['Bias Cases/Protected Attributes'])
+
+# Custom colormap that goes from white to blue
+white_blue_cmap = LinearSegmentedColormap.from_list('white_blue', ['white', 'blue'], N=256)
+
+# Generate the heatmap with the new colormap
+plt.figure(figsize=(12, 8))
+sns.heatmap(heatmap_data, annot=True, fmt="d", cmap=white_blue_cmap, linewidths=.5)
+plt.title('Heatmap of Fairness Metrics vs. Protected Attributes')
+plt.xlabel('Protected Attributes')
+plt.ylabel('Fairness Metrics')
+plt.xticks(rotation=45, ha='right')
+plt.yticks(rotation=0)
+plt.tight_layout()
+plt.show()
+
+
+
+# Stacked Bar Chart of Fairness Metrics by Area/Domain
+# We need to re-expand 'Area/Domain' since the entries may also contain multiple values
+data_area_expanded = expand_entries(data_metrics_expanded, 'Area/Domain')
+
+# Create a dataframe that counts the occurrences of fairness metrics within each area/domain
+stacked_data = data_area_expanded.groupby(['Area/Domain', 'Fairness metrics']).size().unstack(fill_value=0)
+
+# Generate the stacked bar chart
+stacked_data.plot(kind='bar', stacked=True, figsize=(12, 8), colormap='tab20c')
+plt.title('Stacked Bar Chart of Fairness Metrics by Area/Domain')
+plt.xlabel('Area/Domain')
+plt.ylabel('Frequency of Fairness Metrics')
+plt.xticks(rotation=45, ha='right')
+plt.legend(title='Fairness Metrics', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
