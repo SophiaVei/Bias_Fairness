@@ -117,11 +117,15 @@ heatmap_data = pd.crosstab(data_attributes_expanded['Fairness metrics'], data_at
 white_blue_cmap = LinearSegmentedColormap.from_list('white_blue', ['white', 'blue'], N=256)
 
 # Generate the heatmap with the new colormap
-plt.figure(figsize=(12, 8))
-sns.heatmap(heatmap_data, annot=True, fmt="d", cmap=white_blue_cmap, linewidths=.5)
-plt.title('Heatmap of Fairness Metrics vs. Protected Attributes')
-plt.xlabel('Protected Attributes')
-plt.ylabel('Fairness Metrics')
+plt.figure(figsize=(20, 10))  # Increase figure size as needed
+sns.heatmap(
+    heatmap_data,
+    annot=True,
+    fmt="d",
+    cmap=white_blue_cmap,
+    linewidths=.5,
+    cbar_kws={"shrink": 0.5}  # Adjust the color bar size if necessary
+)
 plt.xticks(rotation=45, ha='right')
 plt.yticks(rotation=0)
 plt.tight_layout()
@@ -143,5 +147,25 @@ plt.xlabel('Area/Domain')
 plt.ylabel('Frequency of Fairness Metrics')
 plt.xticks(rotation=45, ha='right')
 plt.legend(title='Fairness Metrics', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
+
+
+
+# Frequency Bar Chart of Mechanisms (Frequency of Mechanism Types across Datasets)
+# Preprocess 'Mechanism Type' column similarly to the previous expansions
+data_mechanism_expanded = expand_entries(data, 'Mechanism Type')
+
+# Create a count plot for Mechanism Type
+mechanism_counts = data_mechanism_expanded['Mechanism Type'].value_counts()
+
+# Plotting the count plot for Mechanism Type
+plt.figure(figsize=(12, 6))
+mechanism_counts.plot(kind='bar', color='teal')
+plt.title('Frequency of Mechanism Types Across Datasets')
+plt.xlabel('Mechanism Type')
+plt.ylabel('Frequency')
+plt.xticks(rotation=45, ha='right')
+plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()

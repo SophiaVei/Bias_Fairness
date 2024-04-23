@@ -24,7 +24,7 @@ data.head(), data.columns
 all_definitions = data['Definition'].dropna().str.cat(sep=' ')
 
 # Add custom stopwords
-custom_stopwords = {'and', 'no', 'yes', 'or'}
+custom_stopwords = {'and', 'no', 'yes', 'or', 'bias', 'biases', 'arises'}
 
 # Update the stopwords set with custom stopwords
 stopwords = STOPWORDS.union(custom_stopwords)
