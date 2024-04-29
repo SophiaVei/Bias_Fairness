@@ -31,11 +31,17 @@ def expand_comma_separated_values(df, column_name):
 # Apply the function to the 'Data types' column
 expanded_data_types = expand_comma_separated_values(fairness_tools_df[['Name', 'Data types']], 'Data types')
 
-# Plotting the count of tools by expanded data types used
+# Count the frequency of each data type used
+data_types_counts = expanded_data_types['Data types'].value_counts()
+
+# Calculate the percentage of each data type
+data_types_percentage = data_types_counts / data_types_counts.sum() * 100
+
+# Plotting the percentage of tools by expanded data types used
 plt.figure(figsize=(10, 8))
-sns.countplot(y='Data types', data=expanded_data_types, palette='viridis', order=expanded_data_types['Data types'].value_counts().index)
-plt.title('Count of Tools by Data Types Used')
-plt.xlabel('Count of Tools')
+sns.barplot(x=data_types_percentage.values, y=data_types_percentage.index, palette='viridis')
+plt.title('Percentage of Tools by Data Types Used')
+plt.xlabel('Percentage of Tools (%)')
 plt.ylabel('Data Types')
 plt.show()
 

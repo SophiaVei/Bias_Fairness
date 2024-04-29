@@ -4,7 +4,7 @@ import seaborn as sns
 import numpy as np
 
 # Load the dataset
-datasets_df = pd.read_csv('Fairness Datasets - Φύλλο1 (1).csv')
+datasets_df = pd.read_csv('Fairness Datasets.csv')
 
 # Correct the column name in Fairness Datasets and remove any leading/trailing spaces
 datasets_df.rename(columns=lambda x: x.strip(), inplace=True)
@@ -20,8 +20,12 @@ exploded_df = filtered_df.explode('Mechanism Type').explode('Bias types')
 # Remove duplicates to avoid over-representation of repeated datasets
 unique_df = exploded_df.drop_duplicates(subset=['Name', 'Mechanism Type', 'Bias types'])
 
+# Set the desired order for 'Mechanism Type'
+category_order = ['Pre-process', 'In-process', 'Post-process']
+unique_df['Mechanism Type'] = pd.Categorical(unique_df['Mechanism Type'], categories=category_order, ordered=True)
+
 # Convert categorical columns to category codes and apply minimal jitter
-unique_df.loc[:, 'Mechanism Type Code'] = unique_df['Mechanism Type'].astype('category').cat.codes
+unique_df.loc[:, 'Mechanism Type Code'] = unique_df['Mechanism Type'].cat.codes
 unique_df.loc[:, 'Bias types Code'] = unique_df['Bias types'].astype('category').cat.codes
 unique_df.loc[:, 'Jittered Mechanism Type'] = unique_df['Mechanism Type Code'] + np.random.normal(0, 0.05, size=len(unique_df))
 unique_df.loc[:, 'Jittered Bias Types'] = unique_df['Bias types Code'] + np.random.normal(0, 0.05, size=len(unique_df))
@@ -37,13 +41,13 @@ plt.grid(True)
 plt.legend(title='Dataset Name', bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
 # Adjust margins to accommodate legends and axis labels
-plt.subplots_adjust(left=0.12, right=0.825)  # Adjust right margin to prevent the legend from being cut off
+plt.subplots_adjust(left=0.12, right=0.825)
 
 # Set tighter y-axis limits based on the categorical codes to reduce gaps
 plt.ylim(unique_df['Bias types Code'].min() - 1, unique_df['Bias types Code'].max() + 1)
 
 # Update the x and y-ticks to show the category names instead of codes
-plt.xticks(ticks=np.unique(unique_df['Mechanism Type Code']), labels=unique_df['Mechanism Type'].astype('category').cat.categories)
+plt.xticks(ticks=np.unique(unique_df['Mechanism Type Code']), labels=category_order)
 plt.yticks(ticks=np.unique(unique_df['Bias types Code']), labels=unique_df['Bias types'].astype('category').cat.categories)
 
 plt.show()

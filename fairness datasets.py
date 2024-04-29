@@ -135,16 +135,34 @@ plt.show()
 
 # Stacked Bar Chart of Fairness Metrics by Area/Domain
 # We need to re-expand 'Area/Domain' since the entries may also contain multiple values
+def expand_entries(df, column_name):
+    return (
+        df.drop(column_name, axis=1)
+          .join(
+              df[column_name]
+                .str.replace(';', ',')  # Replace semicolons with commas to unify the split
+                .str.split(', ')
+                .explode()
+                .dropna()
+                .reset_index(drop=True)
+          )
+    )
+
+# Expand 'Fairness metrics' and 'Area/Domain' entries
+data_metrics_expanded = expand_entries(data, 'Fairness metrics')
 data_area_expanded = expand_entries(data_metrics_expanded, 'Area/Domain')
 
 # Create a dataframe that counts the occurrences of fairness metrics within each area/domain
 stacked_data = data_area_expanded.groupby(['Area/Domain', 'Fairness metrics']).size().unstack(fill_value=0)
 
-# Generate the stacked bar chart
+# Normalize the data by converting frequencies to percentages
+stacked_data = stacked_data.div(stacked_data.sum(axis=1), axis=0) * 100  # Convert counts to percentages
+
+# Generate the stacked bar chart with percentages
 stacked_data.plot(kind='bar', stacked=True, figsize=(12, 8), colormap='tab20c')
-plt.title('Stacked Bar Chart of Fairness Metrics by Area/Domain')
+plt.title('Stacked Bar Chart of Fairness Metrics by Area/Domain (Percentages)')
 plt.xlabel('Area/Domain')
-plt.ylabel('Frequency of Fairness Metrics')
+plt.ylabel('Percentage of Fairness Metrics (%)')
 plt.xticks(rotation=45, ha='right')
 plt.legend(title='Fairness Metrics', bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
@@ -153,18 +171,22 @@ plt.show()
 
 
 # Frequency Bar Chart of Mechanisms (Frequency of Mechanism Types across Datasets)
-# Preprocess 'Mechanism Type' column similarly to the previous expansions
+# Preprocess 'Mechanism Type' column
 data_mechanism_expanded = expand_entries(data, 'Mechanism Type')
 
 # Create a count plot for Mechanism Type
 mechanism_counts = data_mechanism_expanded['Mechanism Type'].value_counts()
 
-# Plotting the count plot for Mechanism Type
+# Convert counts to percentages
+total_counts = mechanism_counts.sum()
+mechanism_percentages = (mechanism_counts / total_counts) * 100
+
+# Plotting the count plot for Mechanism Type with percentages
 plt.figure(figsize=(12, 6))
-mechanism_counts.plot(kind='bar', color='teal')
-plt.title('Frequency of Mechanism Types Across Datasets')
+mechanism_percentages.plot(kind='bar', color='teal')
+plt.title('Percentage of Mechanism Types Across Datasets')
 plt.xlabel('Mechanism Type')
-plt.ylabel('Frequency')
+plt.ylabel('Percentage (%)')
 plt.xticks(rotation=45, ha='right')
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
