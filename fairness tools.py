@@ -49,19 +49,32 @@ plt.show()
 expanded_metric_types = expand_comma_separated_values(fairness_tools_df[['Name', 'Metric types']], 'Metric types')
 expanded_ml_tasks = expand_comma_separated_values(fairness_tools_df[['Name', 'ML task']], 'ML task')
 
-# Plotting the count of tools by expanded metric types used
+# Count the frequency of each metric type used
+metric_types_counts = expanded_metric_types['Metric types'].value_counts()
+
+# Calculate the percentage of each metric type
+metric_types_percentage = metric_types_counts / metric_types_counts.sum() * 100
+
+# Plotting the percentage of tools by expanded metric types used
 plt.figure(figsize=(10, 8))
-sns.countplot(y='Metric types', data=expanded_metric_types, palette='cubehelix', order=expanded_metric_types['Metric types'].value_counts().index)
-plt.title('Count of Tools by Metric Types Used')
-plt.xlabel('Count of Tools')
+sns.barplot(x=metric_types_percentage.values, y=metric_types_percentage.index, palette='cubehelix')
+plt.title('Percentage of Tools by Metric Types Used')
+plt.xlabel('Percentage of Tools (%)')
 plt.ylabel('Metric Types')
 plt.show()
 
-# Plotting the count of tools by expanded ML tasks addressed
+
+# Count the frequency of each ML task used
+ml_tasks_counts = expanded_ml_tasks['ML task'].value_counts()
+
+# Calculate the percentage of each ML task
+ml_tasks_percentage = ml_tasks_counts / ml_tasks_counts.sum() * 100
+
+# Plotting the percentage of tools by expanded ML tasks addressed
 plt.figure(figsize=(15, 8))
-sns.countplot(y='ML task', data=expanded_ml_tasks, palette='coolwarm', order=expanded_ml_tasks['ML task'].value_counts().index)
-plt.title('Count of Tools by ML Tasks Addressed')
-plt.xlabel('Count of Tools')
+sns.barplot(x=ml_tasks_percentage.values, y=ml_tasks_percentage.index, palette='coolwarm')
+plt.title('Percentage of Tools by ML Tasks Addressed')
+plt.xlabel('Percentage of Tools (%)')
 plt.ylabel('ML Tasks')
 plt.show()
 
