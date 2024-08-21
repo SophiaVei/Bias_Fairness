@@ -12,4 +12,4 @@ We do an extensive analysis, especially based on visualisations, to find a commo
 3. Which datasets have been analysed more and why.
 4. Which are the most common types of bias in these datasets.
 5. Which tools are mostly used and why (e.g. "are they actually able to mitigate all types of bias? Why do they have the tendency to generalise in many cases?").
-6. Visualisations that show how one problem is reflected to another (e.g. 
+6. Visualisations that show how one problem is reflected to another (e.g. bias types VS mechanism type, % of fairness metrics used by area/domain, area/domain VS protected attributes, heatmaps etc).
